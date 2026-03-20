@@ -1,0 +1,48 @@
+dataset:
+  name: scalability_node_kronecker_node_scale_n8000_md12p0_cap64_r0
+  path: data/scalability_node_kronecker_node_scale_n8000_md12p0_cap64_r0
+  sai: true
+  position_swap: true
+  properties:
+    num_classes: 7
+    num_features: 128
+    num_nodes: 8000
+    num_edges: 48000
+    num_train: 1600
+    num_val: 3200
+    num_test: 4800
+    max_degree: 64
+  network:
+    no_of_runs: 4
+    hidden_layer_size: 64
+    preload_network_path: 
+      data/scalability_node_kronecker_node_scale_n8000_md12p0_cap64_r0/network
+    large_network: false
+    with_normalization: false
+  graph:
+    mask_neighbor: true
+    neighbor_padding_mode: bucket
+    bucket:
+      strategy: custom
+      merge_mode: partial_fill
+      min_nodes_k: 20
+      count: 10
+      exp_base: 2
+      boundaries:
+      - 4
+      - 8
+      - 16
+      - 32
+      - 64
+    export_mask_distribution: true
+    mask_distribution_output_dir: output/mask_distribution
+    save_node_init: false
+    rewrite_node_init: true
+    node_init_path: 
+      data/scalability_node_kronecker_node_scale_n8000_md12p0_cap64_r0/node_init
+    precompute_node_state: false
+    node_state_path: 
+      data/scalability_node_kronecker_node_scale_n8000_md12p0_cap64_r0/node_state
+    batch_array_access: true
+    base_array_size: 2
+    batch_node_size_array_access: 1000
