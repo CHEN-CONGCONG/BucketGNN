@@ -85,7 +85,7 @@ def load_yaml(yaml_file):
     """Load YAML configuration with round-trip parser to preserve comments/layout."""
     if YAML is None:
         raise RuntimeError(
-            "缺少 ruamel.yaml，请先安装: pip install ruamel.yaml"
+            "Missing ruamel.yaml. Please install it first: pip install ruamel.yaml"
         )
 
     yaml_rt = YAML(typ='rt')
@@ -160,30 +160,30 @@ def get_yaml_file(dataset):
 def validate_requirements(run_type, require_build_tools=True):
     """Validate system dependencies."""
     if require_build_tools and not shutil.which('make'):
-        raise RuntimeError('未找到make命令，请先安装GNU Make')
+        raise RuntimeError('make command not found. Please install GNU Make first')
     if require_build_tools and not shutil.which('g++'):
-        raise RuntimeError('未找到g++编译器，请先安装g++')
+        raise RuntimeError('g++ compiler not found. Please install g++ first')
     if run_type in ('lan', 'wan') and not shutil.which('tc'):
         raise RuntimeError(
-            '缺少流量控制工具 (tc)，请安装 iproute2 包，命令: '
+            'Missing traffic control tool (tc). Please install the iproute2 package: '
             'sudo apt-get update && sudo apt-get install -y iproute2 iperf3 iputils-ping'
         )
 
 
 def compile_project(clean_build=False):
-    """编译项目源代码"""
+    """Compile project source code."""
     project_dir = Path(__file__).parent.parent
     original_dir = Path.cwd()
 
     try:
-        print(f"定位到项目目录: {project_dir}")
+        print(f"Switching to project directory: {project_dir}")
         os.chdir(project_dir)
 
         if clean_build:
-            print('清理旧编译文件...')
+            print('Cleaning previous build artifacts...')
             subprocess.run(['make', 'clean'], check=True)
 
-        print('正在编译...')
+        print('Compiling...')
         result = subprocess.run(
             ['make', 'all'],
             check=True,
@@ -191,21 +191,21 @@ def compile_project(clean_build=False):
             stderr=subprocess.STDOUT,
             text=True,
         )
-        print('编译输出:')
+        print('Build output:')
         print(result.stdout)
     except subprocess.CalledProcessError as e:
-        print(f"编译失败: {str(e)}")
-        print('错误输出:', e.stdout)
-        raise RuntimeError('编译错误，请检查Makefile配置') from e
+        print(f"Compilation failed: {str(e)}")
+        print('Error output:', e.stdout)
+        raise RuntimeError('Build error. Please check your Makefile configuration') from e
     except FileNotFoundError as e:
-        raise RuntimeError('未找到make命令，请确认已安装构建工具') from e
+        raise RuntimeError('make command not found. Please ensure build tools are installed') from e
     finally:
         os.chdir(original_dir)
-        print(f"已恢复工作目录到: {original_dir}")
+        print(f"Restored working directory to: {original_dir}")
 
 
 def build_party_command(party_num, args, output_dir):
-    """构建参与方命令"""
+    """Build command for one MPC party."""
     binary_name = Path(__file__).parent.parent / 'BucketGNN.out'
     if not binary_name.exists():
         raise FileNotFoundError(f'Binary not found: {binary_name}')
@@ -226,7 +226,7 @@ def build_party_command(party_num, args, output_dir):
 
 
 def execute_with_network(args):
-    """带网络配置的执行流程"""
+    """Execute inference workflow with network configuration."""
     net_mgr = NetworkManager(args.run_type)
     project_root = Path(__file__).parent.parent
 
@@ -304,10 +304,10 @@ def execute_with_network(args):
 
                 processes = []
                 for party, cmd in commands.items():
-                    print(f"启动 Party{party}: {' '.join(cmd)}")
+                    print(f"Starting Party{party}: {' '.join(cmd)}")
                     party_name = ['A', 'B', 'C'][party]
                     log_file = output_dir / f"Party{party_name}.txt"
-                    print(f"日志文件: {(project_root / log_file).resolve()}")
+                    print(f"Log file: {(project_root / log_file).resolve()}")
 
                     with open(log_file, 'w') as f:
                         p = subprocess.Popen(cmd, stdout=f, stderr=subprocess.STDOUT)
@@ -316,7 +316,7 @@ def execute_with_network(args):
                 for party, p in processes:
                     ret = p.wait()
                     if ret != 0:
-                        raise RuntimeError(f'Party {party} 执行失败，返回码: {ret}')
+                        raise RuntimeError(f'Party {party} failed with return code: {ret}')
 
             print(f"\nCompleted inference for dataset: {dataset}")
     finally:
@@ -452,7 +452,7 @@ Examples:
         print(f'Results saved to: {Path(args.output).resolve()}')
         print('=' * 80)
     except Exception as e:
-        print(f"\n错误: {str(e)}", file=sys.stderr)
+        print(f"\nError: {str(e)}", file=sys.stderr)
         sys.exit(1)
 
 if __name__ == '__main__':

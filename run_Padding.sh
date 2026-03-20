@@ -16,14 +16,14 @@ for RUN_TYPE in "${RUN_TYPES[@]}"; do
         --run_type "$RUN_TYPE" -m test -n "$NETWORK" -d "$DATASET" -r "$RUNS" \
         --sai --position-swap --batch-array-access --base_array_size 2 --mask-neighbor \
         --neighbor_padding_mode random \
-        --output "output_ablation/padding_random_${DATASET}"
+        --output "output_ablation/padding_random_${DATASET}" --skip-compile
 
     echo "[${RUN_TYPE}] [Ablation] Padding=secgnn"
     python scripts/run_mpc.py \
         --run_type "$RUN_TYPE" -m test -n "$NETWORK" -d "$DATASET" -r "$RUNS" \
         --sai --position-swap --batch-array-access --base_array_size 2 --mask-neighbor \
         --neighbor_padding_mode secgnn \
-        --output "output_ablation/padding_secgnn_${DATASET}"
+        --output "output_ablation/padding_secgnn_${DATASET}" --skip-compile
 done
 
 all_end_time=$(date +%s)

@@ -107,7 +107,7 @@ for name in targets:
 
     if not data_dir.exists():
         print(f"[ERROR] Missing dataset directory: {data_dir}")
-        print("请先运行: bash run_training_synthetic.sh")
+        print("Please run first: bash run_training_synthetic.sh")
         raise SystemExit(1)
 
     missing_model_files = []
@@ -131,8 +131,8 @@ for name in targets:
         remaining = len(missing_model_files) - len(preview)
         if remaining > 0:
             print(f"  ... and {remaining} more")
-        print("请先运行: bash run_training_synthetic.sh")
-        print("注意: 该脚本现在会导出 network/gcn/run_x 下的模型文件。")
+        print("Please run first: bash run_training_synthetic.sh")
+        print("Note: this script now exports model files under network/gcn/run_x.")
         raise SystemExit(1)
 
     # default values
@@ -229,7 +229,8 @@ for RUN_TYPE in "${RUN_TYPES[@]}"; do
         --bucket_merge_mode partial_fill \
         --bucket_min_nodes_k 20 \
         --bucket_boundaries 4,8,16,32,64 \
-        --base_array_size 2
+        --base_array_size 2 \
+        --skip-compile
 
     echo "Starting run_type=${RUN_TYPE} [baseline: panther + no batch-array-access]"
     python scripts/run_mpc_synthetic.py \
@@ -254,7 +255,8 @@ for RUN_TYPE in "${RUN_TYPES[@]}"; do
         --no-batch-array-access \
         --mask-neighbor \
         --neighbor_padding_mode random \
-        --base_array_size 2
+        --base_array_size 2 \
+        --skip-compile
 done
 
 end_time=$(date +%s)

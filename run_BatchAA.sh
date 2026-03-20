@@ -18,13 +18,13 @@ for RUN_TYPE in "${RUN_TYPES[@]}"; do
     python scripts/run_mpc.py \
         --run_type "$RUN_TYPE" -m test -n "$NETWORK" -d "$DATASET" -r "$RUNS" \
         --sai --position-swap --no-batch-array-access --neighbor_padding_mode bucket \
-        --output "$OUTPUT_NO_BATCH"
+        --output "$OUTPUT_NO_BATCH" --skip-compile
 
     # echo "[${RUN_TYPE}] [Ablation] BatchAA ON"
     # python scripts/run_mpc.py \
     #     --run_type "$RUN_TYPE" -m test -n "$NETWORK" -d "$DATASET" -r "$RUNS" \
     #     --sai --position-swap --batch-array-access --base_array_size 2 --neighbor_padding_mode bucket \
-    #     --output "$OUTPUT_BATCH"
+    #     --output "$OUTPUT_BATCH" --skip-compile
 done
 
 all_end_time=$(date +%s)

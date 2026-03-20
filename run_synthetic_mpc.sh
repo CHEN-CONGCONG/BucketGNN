@@ -16,7 +16,7 @@ OUTPUT_DIR="${OUTPUT_DIR:-output_ciphertext_inference_synthetic}"
 
 DRY_RUN_FLAG="${DRY_RUN_FLAG:-}"
 CLEAN_BUILD_FLAG="${CLEAN_BUILD_FLAG:-}"
-SKIP_COMPILE_FLAG="${SKIP_COMPILE_FLAG:-}"
+SKIP_COMPILE_FLAG="${SKIP_COMPILE_FLAG:-1}"
 
 echo "Config: RUN_TYPE=${RUN_TYPE}, MODE=${MODE}, NETWORK=${NETWORK}, RUNS=${RUNS}, OUTPUT_DIR=${OUTPUT_DIR}"
 
@@ -59,7 +59,7 @@ for p in files:
         missing.append(f"{p}: missing preload_network_path -> {net_path}")
 
 if missing:
-  print("[ERROR] Missing paths detected. Please complete the corresponding synthetic data and model training first:")
+    print("[ERROR] Missing paths detected. Please complete the corresponding synthetic data and model training first:")
     for item in missing:
         print("  -", item)
     sys.exit(1)

@@ -254,7 +254,7 @@ def funcCleanFiles(path="data/"):
 
 def load_fixed_splits(data_dir, dataset, name, protocol):
     splits_lst = []
-    # 小写
+    # Normalize to lowercase
     name = name.lower()
     if name in ['cora', 'citeseer', 'pubmed'] and protocol == 'semi':
         splits = {}
@@ -491,7 +491,7 @@ class HandleRSSDataset:
             "node_state_2_B": f"node_state/node_state_2_B",
             "node_state_2_C": f"node_state/node_state_2_C",
         }
-        # 若文件夹不存在，则创建文件夹
+        # Create directories if they do not exist
         if not os.path.exists(path.join(self.data_path, "node_state")):
             os.makedirs(path.join(self.data_path, "node_state"))
         if not os.path.exists(path.join(self.data_path, "node_init")):
@@ -545,7 +545,7 @@ class HandleRSSDataset:
             print("Adjacency list files already exist")
             adj_list, edge_weight = self._build_adjacency()
         else:
-            # 删除已存在的文件, 若不存在则不删除
+            # Remove existing files; skip if they do not exist
             if os.path.exists(path.join(self.data_path, paths["adj_list_A"])):
                 os.remove(path.join(self.data_path, paths["adj_list_A"]))
             if os.path.exists(path.join(self.data_path, paths["adj_list_B"])):
@@ -637,11 +637,11 @@ class HandleRSSDataset:
             and os.path.exists(path.join(self.data_path, paths["node_state_1_C"]))
         ):
             print("Node state files already exist")
-            # 如果文件已存在，直接加载缓存
+            # If cached files exist, load them directly
             node_state_1 = [torch.zeros_like(x) for x in self.x]
             with open(path.join(self.data_path, paths["node_state_1_A"]), "r") as f:
                 for i in range(self.n):
-                    # 读取每一行，分隔符为空格
+                    # Read each line using spaces as separators
                     line = f.readline().strip().split()
                     node_state_1[i] = torch.tensor([float(x) for x in line])
         else:
@@ -702,7 +702,7 @@ class HandleRSSDataset:
             os.makedirs(path.join(self.data_path, "edge_info_plaintext"))
 
 
-        # 如果文件已存在，直接加载缓存
+        # If cache files exist, load them directly
         if (
             os.path.exists(path_adj_list)
             and os.path.exists(path_edge_weight)
@@ -715,7 +715,7 @@ class HandleRSSDataset:
             print(f"Loaded adjacency list from {path_adj_list}")
             return adj_list, edge_weight
 
-        # 初始化 adjacency list 和 edge weight
+        # Initialize adjacency list and edge weights
         adj_list = []
         edge_weight = []
 
@@ -729,7 +729,7 @@ class HandleRSSDataset:
 
         progress_bar.close()
 
-        # 保存结果到文件
+        # Save results to files
         print(f"Saving adjacency list to {path_adj_list}")
         print(f"Saving edge weight to {path_edge_weight}")
         with open(path_adj_list, "wb") as f:
@@ -747,7 +747,7 @@ class HandleRSSDataset:
         label = self.dataset.label[idx]
         device = label.device
 
-        # 如果标签为 -1，则将 -1 替换为 0
+        # Replace invalid label -1 with 0
         label = torch.where(label >= 0, label, torch.tensor(0).to(device))
 
         if label.shape[1] == 1:
@@ -758,7 +758,7 @@ class HandleRSSDataset:
         return true_label
 
     def _compute_node_init(self, adj_list, edge_weight):
-        # 计算sw, sw_reci, sw_inv_sqrt
+        # Compute sw, sw_reci, and sw_inv_sqrt
         sw = np.zeros(self.n)
         sw_reci = np.zeros(self.n)
         sw_inv_sqrt = np.zeros(self.n)
@@ -767,7 +767,7 @@ class HandleRSSDataset:
             sw_reci[i] = 1.0 / sw[i]
             sw_inv_sqrt[i] = 1.0 / np.sqrt(sw[i])
 
-        # 计算 coef_neigh
+        # Compute coef_neigh
         progress_bar = tqdm(total=self.n, desc="Computing coef_neigh")
         coef_neigh = [None] * self.n
         for node_i in range(self.n):
@@ -776,7 +776,7 @@ class HandleRSSDataset:
             for j, node_j, weight in zip(
                 range(len(adj_list[node_i])), adj_list[node_i], edge_weight[node_i]
             ):
-                # 计算 sw_inv_sqrt[i] * weight * sw_inv_sqrt[j]
+                # Compute sw_inv_sqrt[i] * weight * sw_inv_sqrt[j]
                 coef_neigh[node_i][j] = (
                     sw_inv_sqrt[node_i] * weight * sw_inv_sqrt[node_j]
                 )
@@ -790,11 +790,11 @@ class HandleRSSDataset:
     ):
         node_state = [torch.zeros_like(x) for x in self.x]
 
-        # 计算 node_state = 1/sw_i * input_i
+        # Compute node_state = 1/sw_i * input_i
         for i in range(self.n):
             node_state[i] = sw_reci[i] * pre_state[i]
 
-            # 计算 edge_weight * sw_inv_sqrt[i] * sw_inv_sqrt[j] * input_j
+            # Compute edge_weight * sw_inv_sqrt[i] * sw_inv_sqrt[j] * input_j
             for j, node_j, weight in zip(
                 range(len(adj_list[i])), adj_list[i], edge_weight[i]
             ):

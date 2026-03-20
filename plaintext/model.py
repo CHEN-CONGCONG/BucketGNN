@@ -120,7 +120,7 @@ class Model:
         os.makedirs(model_path, exist_ok=True)
         print(f"Saving model to {model_path}")
 
-        # 如果该路径下已经存在模型文件，则删除它们
+        # Remove existing model files under this path
         for file in os.listdir(model_path):
             file_path = os.path.join(model_path, file)
             if os.path.isfile(file_path):

@@ -6,7 +6,7 @@ echo "All start time: $all_start_time"
 
 cd plaintext/
 
-# 1) 节点规模扩展：固定平均度和最大度
+# 1) Node-scale expansion: fixed mean degree and max degree
 python train_synthetic_model.py \
   --experiment node_scale \
   --generator kronecker \
@@ -21,7 +21,7 @@ python train_synthetic_model.py \
   --save_dataset \
   --save_results
 
-# 2) 图密度扩展：固定节点数，扩展平均度
+# 2) Density-scale expansion: fixed node count and varying mean degree
 python train_synthetic_model.py \
   --experiment density_scale \
   --generator kronecker \
